@@ -1,9 +1,6 @@
 [ORG 0x7c00]
 [BITS 16]
-%define NEWL 13, 10
-%define VID_MEM 0xb8000
-%define CODE_SEG gdt_data.code-gdt_data
-%define DATA_SEG gdt_data.data-gdt_data
+
 
 ;=============================
 ;                            |
@@ -11,34 +8,9 @@
 ;                            |
 ;=============================
 
-start:  jmp     enter32
+start:  jmp     main16
 
-;=============================
-;                            |
-; FAT data                   |
-;                            |
-;=============================
-
-FAT12:
-        db      "MSWIN4.1"              ; OEM identifier
-        dw      0x0200                  ; Bytes per sector (all numbers are in their big endian forms, because nasm converts them to little endian)
-        db      0x01                    ; Sectors per cluster
-        dw      0x0005                  ; Reserved sectors (for kernel)
-        db      0x02                    ; Number of FATs
-        dw      0x00e0                  ; Root directory entries (not sure what they are)
-        dw      0x0b40                  ; Total sectors in the logical volume
-        db      0xf0                    ; Media descriptor type
-        dw      0x0009                  ; Sectors per fat
-        dw      0x0012                  ; Sectors per track
-        dw      0x0002                  ; Heads on the disk
-        dw      0x0000, 0x0000          ; Number of hidden sectors
-        dw      0x0000, 0x0000          ; Number of large sectors
-        db      0x00                    ; Drive number (value in DL)
-        db      0x00                    ; NT flag
-        db      0x29                    ; Signature
-        dw      0xe4d7, 0x1585          ; Volume serial ID (I just copied what mkfs.fat put)
-        db      "  RANDOM OS"           ; Volume label string
-        db      "FAT12   "              ; System identifier (useless)
+drive_num:      db 0
 
 ;=============================
 ;                            |
@@ -46,65 +18,38 @@ FAT12:
 ;                            |
 ;=============================
 
-enter32:
-        ; Setting up the GDT
+main16:
+        mov     [drive_num], DL
 
-        cli
-        lgdt    [gdt_data.desc]
+        ; Setting up stack
+        xor     AX, AX
+	mov     SP, 0x7C00
+        mov     BP, SP
 
-        mov     eax, cr0
-        or      eax, 1
-        mov     cr0, eax
+        mov     AH, 0x00
+	mov     AL, 0x03
+	int     0x10
 
-        jmp     CODE_SEG:main           ; Clears instruction pipeline
+        xor     AX, AX
+        mov     ES, AX                  ; Clearing ES as int 0x10 uses ES:BX
+        mov     AH, 0x02                ; Tells BIOS we are reading using CHS addressing
+        mov     AL, 2                   ; Number of sectors
+        mov     BX, 0x7e00              ; Location to put read data
+        mov     CH, 0                   ; Cylinder to read from
+        mov     CL, 2                   ; Sector to start reading from
+        mov     DH, 0                   ; Head number
+        mov     DL, [drive_num]         ; Drive number
+        int     0x13                    ; BIOS handler for disk access
+
+        jnc     0x7e00
+
+        ; Very descriptive error message
+        mov     AH, 0x0e
+        mov     AL, 'A'
+        int     0x10
 
 .halt:
-        hlt
-
-;=============================
-;                            |
-; GDT data                   |
-;                            |
-;=============================
-
-gdt_data:
-        .null:
-                dq 0
-        .code:
-                dw 0xffff
-                dw 0
-                db 0
-                db 10011010b
-                db 11001111b
-                db 0
-        .data:
-                dw 0xffff
-                dw 0
-                db 0
-                db 10010010b
-                db 11001111b
-                db 0
-.end:
-
-.desc:
-        dw .end - gdt_data - 1
-        dd gdt_data
-
-[BITS 32]
-
-;=============================
-;                            |
-; The majority of the code   |
-;                            |
-;=============================
-
-main:
-        mov     al, 'H'
-        mov     ah, 0x0f
-
-        mov     [VID_MEM], ax
-
-        hlt
+        jmp     $
 
 
 ;=============================
@@ -115,3 +60,5 @@ main:
 
 times 510-($-$$) db 0              
 dw 0xaa55
+
+%include "src/bootloader/exboot.asm"
