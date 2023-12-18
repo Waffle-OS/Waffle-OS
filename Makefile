@@ -1,7 +1,7 @@
-BOOT_SRC = src/bootloader/boot.asm
+BOOT_SRC = bootloader/boot.asm
 BOOT_BIN = out/boot.bin
-KERNEL_ENTRY = src/kernel/entry.asm
-KERNEL_SRC = src/kernel/main.c
+KERNEL_ENTRY = kernel/entry.asm
+KERNEL_SRC = kernel/main.c
 ENTRY_ELF = out/entry.o
 KERNEL_ELF = out/main.o
 KERNEL_BIN = out/main.bin

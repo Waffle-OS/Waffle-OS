@@ -46,7 +46,7 @@ enter32:
 ;                            |
 ;=============================
 
-%include "src/bootloader/misc/gdt.asm"
+%include "bootloader/misc/gdt.asm"
 
 [BITS 32]
 
