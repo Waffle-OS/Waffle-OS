@@ -1,5 +1,5 @@
 {
     "files.associations": {
-        "common.h": "c"
+        "text_mode.h": "c"
     }
 }

@@ -1,7 +1,9 @@
-#include "../include/io.h"
+#include "../include/text_mode.h"
 
 extern void main(void)
 {
-    *(char *)0xb8000 = 'Q';
+    terminal_initialize(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+    vga_putch('Q');
+    vga_putch('Q');
     
 }
