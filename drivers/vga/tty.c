@@ -158,7 +158,7 @@ void vga_puts(char *string)
  */
 void vga_putint(int number)
 {
-	char converted[12];
+	static char converted[12];
 	uint_to_string(number, converted);
 	vga_puts(converted);
 }
@@ -171,7 +171,7 @@ void vga_putint(int number)
  */
 void vga_puthex(int number)
 {
-	char converted[12];
+	static char converted[12];
 	hex_to_string(number, converted);
 	vga_puts(converted);
 }

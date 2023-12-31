@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#ifdef USING_IN_OUT
 
 /* OUTPUT */
 
@@ -13,7 +14,7 @@
  * @param port The port to write to.
  * @param val The value to write.
  */
-static inline void outb(uint16_t port, uint8_t val);
+inline void outb(uint16_t port, uint8_t val);
 
 /**
  * @brief Writes a word to the specified port.
@@ -21,7 +22,7 @@ static inline void outb(uint16_t port, uint8_t val);
  * @param port The port to write to.
  * @param val The value to write.
  */
-static inline void outw(uint16_t port, uint16_t val);
+inline void outw(uint16_t port, uint16_t val);
 
 /**
  * @brief Writes a double word to the specified port.
@@ -29,7 +30,7 @@ static inline void outw(uint16_t port, uint16_t val);
  * @param port The port to write to.
  * @param val The value to write.
  */
-static inline void outl(uint16_t port, uint32_t val);
+inline void outl(uint16_t port, uint32_t val);
 
 
 /* INPUT */
@@ -40,20 +41,36 @@ static inline void outl(uint16_t port, uint32_t val);
  * 
  * @param port The port to read from.
  */
-static inline uint8_t inb(uint16_t port);
+inline uint8_t inb(uint16_t port);
 
 /**
  * @brief Reads the word written at the specified port.
  * 
  * @param port The port to read from.
  */
-static inline uint16_t inw(uint16_t port);
+inline uint16_t inw(uint16_t port);
 
 /**
  * @brief Reads the double word written at the specified port.
  * 
  * @param port The port to read from.
  */
-static inline uint32_t inl(uint16_t port);
+inline uint32_t inl(uint16_t port);
+
+#endif
+
+
+/* MISCELLANIOUS */
+
+
+#ifdef USING_IO_WAIT
+
+/**
+ * @brief Delays by a small amount of time, usually by a few microseconds, using IO ports.
+ *  
+ */
+inline void io_wait(void);
+
+#endif
 
 #endif

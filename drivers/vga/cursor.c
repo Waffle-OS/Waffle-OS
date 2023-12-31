@@ -1,4 +1,5 @@
 #include "../../include/text_mode.h"
+#define USING_IN_OUT
 #include "../../include/io.h"
 
 
@@ -33,22 +34,22 @@ void update_cursor(int x, int y)
 
 /* IO FUNCTIONS */
 
-static inline void outb(uint16_t port, uint8_t val)
+inline void outb(uint16_t port, uint8_t val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) : "memory");
 }
 
-static inline void outw(uint16_t port, uint16_t val)
+inline void outw(uint16_t port, uint16_t val)
 {
     asm volatile ( "outw %0, %1" : : "a"(val), "Nd"(port) : "memory");
 }
 
-static inline void outl(uint16_t port, uint32_t val)
+inline void outl(uint16_t port, uint32_t val)
 {
     asm volatile ( "outl %0, %1" : : "a"(val), "Nd"(port) : "memory");
 }
 
-static inline uint8_t inb(uint16_t port)
+inline uint8_t inb(uint16_t port)
 {
     uint8_t ret;
     asm volatile ( "inb %1, %0"
@@ -58,7 +59,7 @@ static inline uint8_t inb(uint16_t port)
     return ret;
 }
 
-static inline uint16_t inw(uint16_t port)
+inline uint16_t inw(uint16_t port)
 {
     uint16_t ret;
     asm volatile ( "inw %1, %0"
@@ -68,7 +69,7 @@ static inline uint16_t inw(uint16_t port)
     return ret;
 }
 
-static inline uint32_t inl(uint16_t port)
+inline uint32_t inl(uint16_t port)
 {
     uint32_t ret;
     asm volatile ( "inl %1, %0"

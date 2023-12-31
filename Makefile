@@ -3,7 +3,7 @@ all:
 BOOT_SRC := bootloader/boot.asm
 BOOT_BIN := out/boot.bin
 KERNEL_ENTRY := kernel/entry.asm 
-KERNEL_SRC := kernel/main.c drivers/vga/tty.c drivers/vga/cursor.c
+KERNEL_SRC := kernel/main.c drivers/vga/tty.c drivers/vga/cursor.c drivers/interrupts/pic.c drivers/terminal/terminal.c
 KERNEL_OBJ := $(foreach file, ${KERNEL_SRC}, out/$(basename $(notdir ${file})).o)	
 ENTRY_OBJ := out/entry.o
 KERNEL_BIN := out/main.bin
@@ -27,7 +27,7 @@ $(eval $(call SOURCES, ${KERNEL_SRC}))
 all: out/ ${obj.c} build 
 
 ${obj.c} : % :
-	i686-elf-gcc -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O2
+	i686-elf-gcc -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O4
 
 run:
 	qemu-system-x86_64 -hda ${OS_IMG}
