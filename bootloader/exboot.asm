@@ -1,33 +1,30 @@
-%define CODE_SEG gdt_data.code-gdt_data
-%define DATA_SEG gdt_data.data-gdt_data
-;=============================
-;                            |
-; The majority of the code   |
-;                            |
-;=============================
+%define MAGIC_NUM 0x534D4150
+
+; The beginning of the stage 2 bootloader
+stage2:
+.get_mmap:
+        clc
+        mov     EAX, 0xE820
+        xor     EBX, EBX
+        mov     ECX, 24
+        mov     EDX, MAGIC_NUM
+        mov     DI, 0x500
+        int     0x15
+        jc      .mmap_error
+.mmap_loop:
+        ; todo
+
+.mmap_error:
+        mov     SI, mmap_error_msg
+        call    puts
+        jmp     $
+
+mmap_error_msg:         db 'Unable to obtain memory map.', NEWL, 0
+        
+.load_kernel:
+        
 
 enter32:
-        ; Reading kernel from disk
-        xor     AX, AX
-        mov     ES, AX
-        mov     AH, 0x02                ; Tells BIOS we are reading using CHS addressing
-        mov     AL, 8                   ; Number of sectors
-        mov     BX, 0x8200              ; Location to put read data
-        mov     CH, 0                   ; Cylinder to read from
-        mov     CL, 4                   ; Sector to start reading from
-        mov     DH, 0                   ; Head number
-        mov     DL, [drive_num]         ; Drive number
-        int     0x13                    ; BIOS handler for disk access
-
-        jnc     enter32.load_gdt
-
-        mov     AH, 0x0e
-        mov     AL, 'B'
-        int     0x10
-.halt:
-        jmp $
-
-.load_gdt:
         ; Loading GDT
         cli
         lgdt    [gdt_data.desc]
@@ -40,11 +37,7 @@ enter32:
 
         hlt
 
-;=============================
-;                            |
-; GDT data                   |
-;                            |
-;=============================
+
 
 %include "bootloader/misc/gdt.asm"
 
@@ -60,4 +53,4 @@ main32:
         
         hlt
 
-times 1536-($-$$) db 0
+times (512*4)-($-$$) db 0

@@ -1,63 +1,95 @@
 [ORG 0x7c00]
 [BITS 16]
+%define NEWL 13, 10
 
 
-;=============================
-;                            |
-; BOOT SECTOR                |
-;                            |
-;=============================
 
-start:  jmp     main16
+stage1:
+        ; Setting up stack and segments
+        mov     SP, 0x7C00
+        mov     BP, SP
+        xor     AX, AX
+        mov     DS, AX
+        mov     ES, AX
+        mov     SS, AX
 
-drive_num:      db 0
-
-;=============================
-;                            |
-; Enters 32 bit mode         |
-;                            |
-;=============================
-
-main16:
         mov     [drive_num], DL
 
-        ; Setting up stack
-        xor     AX, AX
-	mov     SP, 0x7C00
-        mov     BP, SP
-
+        ; Entering VGA video mode 3
         mov     AH, 0x00
-	mov     AL, 0x03
-	int     0x10
-
-        xor     AX, AX
-        mov     ES, AX                  ; Clearing ES as int 0x10 uses ES:BX
-        mov     AH, 0x02                ; Tells BIOS we are reading using CHS addressing
-        mov     AL, 2                   ; Number of sectors
-        mov     BX, 0x7e00              ; Location to put read data
-        mov     CH, 0                   ; Cylinder to read from
-        mov     CL, 2                   ; Sector to start reading from
-        mov     DH, 0                   ; Head number
-        mov     DL, [drive_num]         ; Drive number
-        int     0x13                    ; BIOS handler for disk access
-
-        jnc     0x7e00
-
-        ; Very descriptive error message
-        mov     AH, 0x0e
-        mov     AL, 'A'
+        mov     AL, 0x03
         int     0x10
 
+.load_stage2:
+        ; Check presence of LBA extensions
+        clc
+        mov     AH, 0x41
+        mov     BX, 0x55AA
+        mov     DL, [drive_num]
+        int     0x13
+        jc      .failed_load                    
+
+        ; Read stage 2 from disk
+        mov     AH, 0x42
+        mov     DL, [drive_num]
+        mov     SI, extboot_lba_packet
+        int     0x13
+        jnc     0x7E00                          ; Jump to stage 2 if no errors
+
+.failed_load:
+        mov     SI, failed_load_msg
+        call    puts
 .halt:
         jmp     $
 
 
-;=============================
-;                            |
-; Boot signature             |
-;                            |
-;=============================
 
+;----------
+; DATA
+;----------
+
+drive_num:              db 0
+
+failed_load_msg:        db 'Unable to load stage 2 bootloader from disk.', NEWL, 0
+
+
+; The DAP (disk address packet) used to load the extended bootloader
+extboot_lba_packet:
+        .size:          db 0x10
+        .reserved:      db 0
+        .blocks:        dw 3
+        .offset:        dw 0x7E00
+        .segment:       dw 0
+        .low_address:   dd 1                    ; Low 32 bits of address
+        .high_address:  dw 0                    ; High 16 bits of address
+        .null:          dw 0
+
+
+
+;----------
+; FUNCTIONS
+;----------
+
+; puts - Prints out a string
+; Parameters:
+;       - DS:SI - The location of the string.
+; Notes:
+;       - Will change the data in SI and AX.
+puts:
+        mov     AH, 0x0E
+.loop:
+        mov     AL, [SI]
+        or      AL, AL
+        jz      .end
+        int     0x10
+        inc     SI
+        jmp     .loop
+.end:   
+        ret
+
+
+
+; Boot signature
 times 510-($-$$) db 0              
 dw 0xaa55
 
