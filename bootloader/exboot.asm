@@ -12,8 +12,13 @@ stage2:
         int     0x15
         jc      .mmap_error
 .mmap_loop:
-        ; todo
-
+        or      EBX, EBX
+        jz      load_kernel
+        mov     EAX, 0xE820
+        add     DI, 24
+        mov     ECX, 24
+        int     0x15
+        jmp     .mmap_loop
 .mmap_error:
         mov     SI, mmap_error_msg
         call    puts
@@ -21,8 +26,8 @@ stage2:
 
 mmap_error_msg:         db 'Unable to obtain memory map.', NEWL, 0
         
-.load_kernel:
-        
+load_kernel:
+        jmp     $
 
 enter32:
         ; Loading GDT
@@ -33,7 +38,7 @@ enter32:
         or      EAX, 1
         mov     CR0, EAX
 
-        jmp     CODE_SEG:main32
+        jmp     main32
 
         hlt
 

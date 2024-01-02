@@ -1,4 +1,4 @@
-# RANDOM-OS
+# WaffleOS
 A 32-bit operating system.
 
 ## Why this was made
