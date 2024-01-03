@@ -15,6 +15,7 @@ stage2:
         or      EBX, EBX
         jz      load_kernel
         mov     EAX, 0xE820
+        mov     EDX, MAGIC_NUM
         add     DI, 24
         mov     ECX, 24
         int     0x15
@@ -27,18 +28,43 @@ stage2:
 mmap_error_msg:         db 'Unable to obtain memory map.', NEWL, 0
         
 load_kernel:
+        clc
+        mov     AH, 0x42
+        mov     DL, [drive_num]
+        mov     SI, kernel_lba_packet
+        int     0x13
+        jnc     enter32
+
+.load_error:
+        mov     SI, load_error_msg
+        call    puts
         jmp     $
+
+load_error_msg:         db 'Unable to load kernel', NEWL, 0
+
+kernel_lba_packet:
+        .size:          db 0x10
+        .reserved:      db 0
+        .blocks:        dw 20
+        .offset:        dw 0x9000
+        .segment:       dw 0
+        .low_address:   dd 4                    ; Low 32 bits of address
+        .high_address:  dw 0                    ; High 16 bits of address
+        .null:          dw 0
+
+
 
 enter32:
         ; Loading GDT
         cli
-        lgdt    [gdt_data.desc]
+        lgdt    [gdt_start.desc]
 
         mov     EAX, CR0
         or      EAX, 1
         mov     CR0, EAX
+        
 
-        jmp     main32
+        jmp     0x08:main32
 
         hlt
 
@@ -54,7 +80,7 @@ main32:
         mov     EDX, 0xb8000
         mov     [EDX], AX
 
-        jmp     0x8200
+        jmp     0x9000
         
         hlt
 
