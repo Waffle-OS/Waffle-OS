@@ -13,5 +13,3 @@ A 32-bit operating system.
 * Terminal emulation
 * Filesystem
 * Library similiar to ncurses
-
-[testing github updates bot with this commit]
