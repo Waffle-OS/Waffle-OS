@@ -50,7 +50,7 @@ stage1:
 
 drive_num:              db 0
 
-failed_load_msg:        db 'Unable to load stage 2 bootloader from disk.', NEWL, 0
+failed_load_msg:        db 'Unable to load stage 2 bootloader.', NEWL, 0
 
 
 ; The DAP (disk address packet) used to load the extended bootloader
@@ -92,5 +92,9 @@ puts:
 ; Boot signature
 times 510-($-$$) db 0              
 dw 0xaa55
+
+
+
+
 
 %include "bootloader/exboot.asm"

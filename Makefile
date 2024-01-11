@@ -30,22 +30,23 @@ ${obj.c} : % :
 	i686-elf-gcc -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O4
 
 run:
-	qemu-system-x86_64 -hda ${OS_IMG}
+	qemu-system-x86_64 -hda ${OS_IMG} -d int -no-reboot
 	
 out/:
 	mkdir out
 
 build: bootloader
 	nasm -f elf32 -o ${ENTRY_OBJ} ${KERNEL_ENTRY}
-	i686-elf-ld -Ttext 0x8200 --oformat binary ${ENTRY_OBJ} ${KERNEL_OBJ} -o ${KERNEL_BIN}
+	i686-elf-ld -Ttext 0xC0100000 --oformat binary ${ENTRY_OBJ} ${KERNEL_OBJ} -o ${KERNEL_BIN}
 	cat ${BOOT_BIN} ${KERNEL_BIN} > ${OS_IMG} 
 	truncate --size=1474560 ${OS_IMG}
 
 bootloader:
-	nasm -f bin ${BOOT_SRC} -o ${BOOT_BIN}
+	nasm -f bin ${BOOT_SRC} -o ${BOOT_BIN} -Wall
 
 clean:
 	rm -rf out
 
 .PHONY: bootloader kernel_other
+
 	

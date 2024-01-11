@@ -7,5 +7,5 @@ _start:
     xor     EAX, EAX
 	mov     ESP, 0x7C00
     mov     EBP, ESP
-    jmp     main
-    hlt 
+    call    main
+    jmp     $
