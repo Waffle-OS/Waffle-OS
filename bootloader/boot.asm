@@ -1,10 +1,13 @@
 [ORG 0x7c00]
 [BITS 16]
-%define NEWL 13, 10
 
+jmp     0x00:boot
 
+;----------
+; MAIN
+;----------
 
-stage1:
+boot:
         ; Setting up stack and segments
         mov     SP, 0x7C00
         mov     BP, SP
@@ -34,7 +37,9 @@ stage1:
         mov     DL, [drive_num]
         mov     SI, extboot_lba_packet
         int     0x13
+        mov     DL, [drive_num]
         jnc     0x7E00                          ; Jump to stage 2 if no errors
+
 
 .failed_load:
         mov     SI, failed_load_msg
@@ -70,31 +75,9 @@ extboot_lba_packet:
 ; FUNCTIONS
 ;----------
 
-; puts - Prints out a string
-; Parameters:
-;       - DS:SI - The location of the string.
-; Notes:
-;       - Will change the data in SI and AX.
-puts:
-        mov     AH, 0x0E
-.loop:
-        mov     AL, [SI]
-        or      AL, AL
-        jz      .end
-        int     0x10
-        inc     SI
-        jmp     .loop
-.end:   
-        ret
-
+%include "misc/tty.asm"
 
 
 ; Boot signature
 times 510-($-$$) db 0              
 dw 0xaa55
-
-
-
-
-
-%include "bootloader/exboot.asm"
