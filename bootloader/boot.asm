@@ -1,6 +1,8 @@
 [ORG 0x7c00]
 [BITS 16]
 
+%define NEWL 13, 10
+
 jmp     0x00:boot
 
 ;----------

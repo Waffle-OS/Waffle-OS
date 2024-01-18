@@ -2,7 +2,6 @@
 
 ; 16 bit teletype functions.
 
-%define NEWL 13, 10
 
 ; puts - Prints out a string.
 ; Parameters:

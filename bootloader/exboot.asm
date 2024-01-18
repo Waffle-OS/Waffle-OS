@@ -1,6 +1,8 @@
 [ORG 0x7e00]
 [BITS 16]
 
+%define NEWL 13, 10
+
 ;----------
 ; EXTENDED BOOTLOADER
 ;----------
@@ -131,5 +133,42 @@ move_kernel:
 ;----------
 %define PD_LOC 0x0000_1000
 enable_paging:
-        jmp     $
+        xor     EAX, EAX
+        mov     DI, PD_LOC
 
+.zero_out:
+        ; Zero out the page directory area
+        mov     [DI], EAX
+        add     DI, 32
+        cmp     DI, PD_LOC+0x1000
+        je      .zero_out
+
+.identity_page:
+        mov     EAX, 0b10011011
+        mov     [0x1000], EAX
+        mov     EAX, 0b110011011
+        mov     [0x1000+0x400*3], EAX
+
+.enable:
+        ; Tell CPU location of page directory
+        mov     EAX, PD_LOC
+        mov     CR3, EAX
+
+        ; Enable PSE (page size extension)
+        mov     EAX, CR4
+        or      EAX, 0x00000010
+        mov     CR4, EAX
+
+        ; Enable global paging
+        mov     EAX, CR4
+        or      EAX, 0x80
+        mov     CR4, EAX
+
+        ; Enable paging
+        mov     EAX, CR0
+        or      EAX, 0x80000001
+        mov     CR0, EAX
+
+        xor     EAX, EAX
+
+        jmp     0xC0100000
