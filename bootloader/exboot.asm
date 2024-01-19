@@ -8,11 +8,27 @@
 ;----------
 ex_boot:
         mov     [drive_num], DL
-        jmp     get_mmap
+        jmp     a20
 
 %include "misc/gdt.asm"
 drive_num: db 0
 %include "misc/tty.asm"
+%include "misc/a20.asm"
+
+
+;----------
+; ENABLE A20 LINE
+;----------
+a20:
+        call    enable_a20
+        jnc     get_mmap
+
+.error:
+        mov     SI, a20_msg
+        call    puts
+        jmp     $
+
+a20_msg: db 'Unable to enable A20 line.', NEWL, 0
 
 
 ;----------
@@ -169,6 +185,16 @@ enable_paging:
         or      EAX, 0x80000001
         mov     CR0, EAX
 
+        ; If bootloader is being tested without kernel
+        ; it will likely just be 0s when loaded.
+        ; A bunch of zeroes is read by the CPU as
+        ; `add [EAX], 0`, so setting EAX to 0
+        ; will give the tester an easier time 
+        ; figuring out if paging works, by prolonging
+        ; the time before a page fault occurs.
         xor     EAX, EAX
 
+        ; Jump to kernel
         jmp     0xC0100000
+
+times 1536-($-$$) db 0

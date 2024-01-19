@@ -1,16 +1,12 @@
-#include "../include/text_mode.h"
-#include "../include/interrupts.h"
-#include "../include/io.h"
+#include "stdint.h"
 
 extern void main(void)
 {
-    terminal_initialize(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
-    vga_puts("Hello, World!\n");
-    pic_remap(0x20, 0x28);
+    *(char *)0xC00B8000 = 'Q';
 }
 
 /* IO FUNCTIONS */
-
+/*
 inline void outb(uint16_t port, uint8_t val)
 {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) : "memory");
@@ -54,4 +50,4 @@ inline uint32_t inl(uint16_t port)
                    : "Nd"(port)
                    : "memory");
     return ret;
-}
+} */
