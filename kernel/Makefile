@@ -32,11 +32,11 @@ $(eval $(call SOURCES, ${KERNEL_SRC}))
 
 
 ${obj.c} : % :
-	${CC} -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra 
+	${CC} -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O2
 
 build: out/ ${obj.c}
 	nasm -f elf32 -o ${ENTRY_OBJ} ${KERNEL_ENTRY}
-	${LD} -Ttext 0xC0100000 --oformat binary ${ENTRY_OBJ} ${KERNEL_OBJ} -o ${KERNEL_BIN}
+	${LD} -T kernel.ld ${KERNEL_OBJ}
 
 out/:
 	mkdir out
