@@ -1,8 +1,10 @@
-#include "io/io.h"
+#include "serial/terminal.h"
 
 extern void main(void)
 {
-    *(char *)0xC00B8000 = 'Q';
+    init_com1();
+    terminal_putch('H');
+    terminal_puts("ello, World!\n");
 }
 
 

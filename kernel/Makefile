@@ -6,7 +6,8 @@
 CC := i686-elf-gcc
 LD := i686-elf-ld
 KERNEL_BIN := out/kernel.bin
-KERNEL_SRC := main.c
+KERNEL_SRC := main.c kutils/panic.c serial/serial.c serial/terminal.c \
+
 KERNEL_ENTRY := entry.asm
 
 
@@ -32,7 +33,7 @@ $(eval $(call SOURCES, ${KERNEL_SRC}))
 
 
 ${obj.c} : % :
-	${CC} -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O2
+	${CC} -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O1
 
 build: out/ ${obj.c}
 	nasm -f elf32 -o ${ENTRY_OBJ} ${KERNEL_ENTRY}
