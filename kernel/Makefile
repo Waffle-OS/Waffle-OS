@@ -33,7 +33,7 @@ $(eval $(call SOURCES, ${KERNEL_SRC}))
 
 
 ${obj.c} : % :
-	${CC} -m32 -ffreestanding -g -c -o $(basename $@).o $^ -Wall -Wextra -O1
+	${CC} -m32 -ffreestanding -c -o $(basename $@).o $^ -Wall -Wextra -O1
 
 build: out/ ${obj.c}
 	nasm -f elf32 -o ${ENTRY_OBJ} ${KERNEL_ENTRY}

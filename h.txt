@@ -9,7 +9,7 @@
 00000016  83EC0C            sub esp,byte +0xc
 00000019  6A48              push byte +0x48
 0000001B  E8C5000000        call 0xe5
-00000020  C704243C1110C0    mov dword [esp],0xc010113c
+00000020  C70424561110C0    mov dword [esp],0xc0101156
 00000027  E8E8000000        call 0x114
 0000002C  83C410            add esp,byte +0x10
 0000002F  8B4DFC            mov ecx,[ebp-0x4]
@@ -109,24 +109,34 @@
 00000117  53                push ebx
 00000118  83EC04            sub esp,byte +0x4
 0000011B  8B5D08            mov ebx,[ebp+0x8]
-0000011E  85DB              test ebx,ebx
-00000120  7415              jz 0x137
-00000122  83C301            add ebx,byte +0x1
-00000125  83EC0C            sub esp,byte +0xc
-00000128  0FBE43FF          movsx eax,byte [ebx-0x1]
-0000012C  50                push eax
-0000012D  E8B3FFFFFF        call 0xe5
-00000132  83C410            add esp,byte +0x10
-00000135  EBEB              jmp short 0x122
-00000137  8B5DFC            mov ebx,[ebp-0x4]
-0000013A  C9                leave
-0000013B  C3                ret
-0000013C  656C              gs insb
-0000013E  6C                insb
-0000013F  6F                outsd
-00000140  2C20              sub al,0x20
-00000142  57                push edi
-00000143  6F                outsd
-00000144  726C              jc 0x1b2
-00000146  64210A            and [fs:edx],ecx
-00000149  00                db 0x00
+0000011E  0FB603            movzx eax,byte [ebx]
+00000121  84C0              test al,al
+00000123  751E              jnz 0x143
+00000125  8B5DFC            mov ebx,[ebp-0x4]
+00000128  C9                leave
+00000129  C3                ret
+0000012A  83EC0C            sub esp,byte +0xc
+0000012D  0FB603            movzx eax,byte [ebx]
+00000130  50                push eax
+00000131  E894FFFFFF        call 0xca
+00000136  83C301            add ebx,byte +0x1
+00000139  0FB603            movzx eax,byte [ebx]
+0000013C  83C410            add esp,byte +0x10
+0000013F  84C0              test al,al
+00000141  74E2              jz 0x125
+00000143  3C0A              cmp al,0xa
+00000145  75E3              jnz 0x12a
+00000147  83EC0C            sub esp,byte +0xc
+0000014A  6A0D              push byte +0xd
+0000014C  E879FFFFFF        call 0xca
+00000151  83C410            add esp,byte +0x10
+00000154  EBD4              jmp short 0x12a
+00000156  656C              gs insb
+00000158  6C                insb
+00000159  6F                outsd
+0000015A  2C20              sub al,0x20
+0000015C  57                push edi
+0000015D  6F                outsd
+0000015E  726C              jc 0x1cc
+00000160  64210A            and [fs:edx],ecx
+00000163  00                db 0x00

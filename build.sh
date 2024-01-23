@@ -22,7 +22,7 @@ export NEW_KERNEL_LOC=../build/kernel.bin
 cd kernel
 make
 mv $KERNEL $NEW_KERNEL_LOC
-#make clean
+make clean
 
 # Finally, creates the final OS image
 
