@@ -2,14 +2,11 @@
 A 32-bit operating system.
 
 ## Why this was made
-* I was bored
-* To learn more intimately about how the x86 architecture works.
-* I'm not really sure.
+* H
+* it be fun
 
 ## Planned features 
-* IDT
-* APIC
-* Paging
-* Terminal emulation
-* Filesystem
-* Library similiar to ncurses
+* IDT (otherwise it wont work lmao)
+* APIC (for multicore processing and stuff)
+* Paging (cus i wanna do multitasking)
+* Filesystem (kinda unnessecary ngl)
