@@ -1,4 +1,5 @@
 # WaffleOS
+![Alt text](misc/waffleOS.png)
 A 32-bit operating system.
 
 ## Why this was made
