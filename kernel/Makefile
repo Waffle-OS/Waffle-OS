@@ -7,7 +7,7 @@ CC := i686-elf-gcc
 LD := i686-elf-ld
 KERNEL_BIN := out/kernel.bin
 KERNEL_SRC := main.c kutils/panic.c serial/serial.c serial/terminal.c \
-
+interrupts/pic.c
 KERNEL_ENTRY := entry.asm
 
 

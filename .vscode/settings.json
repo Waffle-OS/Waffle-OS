@@ -2,6 +2,8 @@
     "files.associations": {
         "text_mode.h": "c",
         "io.h": "c",
-        "interrupts.h": "c"
+        "interrupts.h": "c",
+        "terminal.h": "c",
+        "pic.h": "c"
     }
 }
